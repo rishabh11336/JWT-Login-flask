@@ -17,7 +17,7 @@ def token_required(func):
         if not token:
             return jsonify({'Alert!':'Token is missing'})
         try:
-            payload = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
         except:
             return jsonify({'Alert!':'Invalid Token!'})
         return func(*args, **kwargs)
