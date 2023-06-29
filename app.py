@@ -9,7 +9,7 @@ key = os.urandom(24)
 app.config['SECRET_KEY'] = key
 print(key)
 
-
+-----some error-----
 def token_required(func):
     @wraps(func)
     def decorated(*args, **kwargs):
