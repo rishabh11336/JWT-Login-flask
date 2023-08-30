@@ -63,7 +63,7 @@ python3 app.py
 
 ![Screenshot 2023-08-31 040457](https://github.com/rishabh11336/JWT-Login-flask/assets/67859818/acb8ba43-7c47-49fc-8ab2-0407cfac8232)
 
-Use any username and Password as: 1234556
+Use any username and Password as: 123456
 <hr />
 
  ![Screenshot 2023-08-31 035805](https://github.com/rishabh11336/JWT-Login-flask/assets/67859818/3a45eae7-fd05-4b41-b01c-ce8353476d7e)
