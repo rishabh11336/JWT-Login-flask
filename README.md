@@ -7,9 +7,7 @@ This repository contains a Flask web application with [JWT login system].
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
-  - [Configuration](#configuration)
 - [Usage](#usage)
-- [Features](#features)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -19,16 +17,15 @@ These instructions will help you set up and run the Flask application on your lo
 
 ### Prerequisites
 
-- Python [version] installed (recommended: Python [recommended version])
-- [Any other prerequisites or dependencies]
+- Python 3.6+ installed (recommended: Python 3.11)
 
 ### Installation
 
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/your-flask-app.git
-   cd your-flask-app
+   git clone https://github.com/your-username/JWT-Login-flask.git
+   cd JWT-Login-flask
    ```
 
 2. Create a virtual environment:
@@ -38,7 +35,7 @@ These instructions will help you set up and run the Flask application on your lo
    python3 -m venv venv
 
    # On Windows
-   py -3 -m venv venv
+   python -3 -m venv venv
    ```
 
 3. Activate the virtual environment:
@@ -57,30 +54,31 @@ These instructions will help you set up and run the Flask application on your lo
    pip install -r requirements.txt
    ```
 
-### Configuration
-
-[If your app requires any configuration steps, such as setting environment variables or editing configuration files, explain them here.]
-
 ## Usage
 
-[Provide instructions on how to run or use your Flask application.]
+```bash
+python3 app.py
+```
+<hr />
 
-1. [Any setup steps, if applicable]
-2. [How to start the development server]
-3. [How to access the application in a web browser]
+![Screenshot 2023-08-31 040457](https://github.com/rishabh11336/JWT-Login-flask/assets/67859818/acb8ba43-7c47-49fc-8ab2-0407cfac8232)
 
-## Features
+Use any username and Password as: 1234556
+<hr />
 
-[List the key features or functionalities of your app.]
+ ![Screenshot 2023-08-31 035805](https://github.com/rishabh11336/JWT-Login-flask/assets/67859818/3a45eae7-fd05-4b41-b01c-ce8353476d7e)
+You will get a token and click on auth to verify
+<hr />
 
-- [Feature 1]
-- [Feature 2]
-- [Feature 3]
+ ![Screenshot 2023-08-31 035813](https://github.com/rishabh11336/JWT-Login-flask/assets/67859818/8dc525a2-10f8-4280-8bf2-ba7b77804874)
+JWT is verified
+
+
+
 
 ## Contributing
 
-[Explain how others can contribute to your project. This might include information about creating pull requests, coding standards, and so on.]
-
+If you want to contribute make proper login system using sqlite3 db and sqlalchmy.<br>
 We welcome contributions from the community. To contribute to this project, please follow these steps:
 
 1. Fork the repository.
@@ -90,7 +88,5 @@ We welcome contributions from the community. To contribute to this project, plea
 5. Submit a pull request detailing your changes.
 
 ## License
-
-[Specify the license under which your app is distributed. For example:]
 
 This project is licensed under the [MIT License](LICENSE).
