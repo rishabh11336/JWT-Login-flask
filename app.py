@@ -3,23 +3,26 @@ import jwt
 from datetime import datetime, timedelta
 from functools import wraps
 import os
+import urllib.parse
 
 app = Flask(__name__)
 key = os.urandom(24)
 app.config['SECRET_KEY'] = key
 print(key)
 
------some error-----
 def token_required(func):
     @wraps(func)
     def decorated(*args, **kwargs):
         token = request.args.get('token')
         if not token:
-            return jsonify({'Alert!':'Token is missing'})
+            return jsonify({'Alert': 'Token is missing'}), 401
         try:
             data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
-        except:
-            return jsonify({'Alert!':'Invalid Token!'})
+            # Print or log the decoded data here for debugging
+        except jwt.ExpiredSignatureError:
+            return jsonify({'Alert': 'Token has expired'}), 401
+        except jwt.DecodeError:
+            return jsonify({'Alert': 'Invalid Token'}), 401
         return func(*args, **kwargs)
     return decorated
 
@@ -29,27 +32,27 @@ def home():
         return render_template('login.html')
     else:
         return '<center><h1>Jwt login system Authentication Done!</h1></center>'
-#publi
+
 @app.route('/public')
 def public():
     return 'For Public'
 
-#Authenticated
 @app.route('/auth')
 @token_required
 def auth():
-    return 'JWT is verified. Welcome to dashboard'
+    return 'JWT is verified. Welcome to the dashboard.'
 
 @app.route('/login', methods=['POST'])
 def login():
     if request.form['username'] and request.form['password'] == '123456':
         session['logged_in'] = True
-        token = jwt.encode({
-        'user': request.form['username'],
-        'expiration': str(datetime.utcnow() + timedelta(seconds=60))
-        },
-            app.config['SECRET_KEY'], algorithm="HS256")
-        return jsonify({'token': jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])})
+        token_payload = {
+            'user': request.form['username'],
+            'expiration': str(datetime.utcnow() + timedelta(seconds=60))
+        }
+        token = jwt.encode(token_payload, app.config['SECRET_KEY'], algorithm="HS256")
+        encoded_token = urllib.parse.quote(token)
+        return f'<a href="http://localhost:5000/auth?token={encoded_token}">auth</a> <br> <p>{encoded_token}</p>'
     else:
         return make_response('Unable to verify', 403, {'www-Authenticate': 'Basic realm:"Authentication Failed!"'})
 
