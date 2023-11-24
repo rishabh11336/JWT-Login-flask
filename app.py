@@ -1,60 +1,63 @@
-from flask import Flask, request, jsonify, make_response, render_template, session
-import jwt
-from datetime import datetime, timedelta
-from functools import wraps
+from flask import Flask, request
+from flask_sqlalchemy import SQLAlchemy
+from flask_restful import Api, Resource
+from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, jwt_required
+from datetime import timedelta
 import os
-import urllib.parse
 
 app = Flask(__name__)
-key = os.urandom(24)
-app.config['SECRET_KEY'] = key
-print(key)
 
-def token_required(func):
-    @wraps(func)
-    def decorated(*args, **kwargs):
-        token = request.args.get('token')
-        if not token:
-            return jsonify({'Alert': 'Token is missing'}), 401
-        try:
-            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
-            # Print or log the decoded data here for debugging
-        except jwt.ExpiredSignatureError:
-            return jsonify({'Alert': 'Token has expired'}), 401
-        except jwt.DecodeError:
-            return jsonify({'Alert': 'Invalid Token'}), 401
-        return func(*args, **kwargs)
-    return decorated
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SECRET_KEY'] = os.urandom(24)
+db = SQLAlchemy(app)
+api = Api(app)
+jwt = JWTManager(app)
 
-@app.route('/')
-def home():
-    if not session.get('logged_in'):
-        return render_template('login.html')
-    else:
-        return '<center><h1>Jwt login system Authentication Done!</h1></center>'
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100), nullable=False)
+    password = db.Column(db.String(100), nullable=False)
+with app.app_context():
+    db.create_all()
 
-@app.route('/public')
-def public():
-    return 'For Public'
+class UserRegister(Resource):
+    def post(self):
+        data = request.get_json()
+        username = data['username']
+        password = data['password']
 
-@app.route('/auth')
-@token_required
-def auth():
-    return 'JWT is verified. Welcome to the dashboard.'
+        if not username or not password:
+            return {'message': 'Username and password required'}, 400
+        if User.query.filter_by(username=username).first():
+            return {'message': 'User already exists'}, 400
+        
+        new_user = User(username=username, password=password)
+        db.session.add(new_user)
+        db.session.commit()
+        return {'message': 'User created successfully'}, 201
+class UserLogin(Resource):
+    def post(self):
+        data = request.get_json()
+        username = data['username']
+        password = data['password']
 
-@app.route('/login', methods=['POST'])
-def login():
-    if request.form['username'] and request.form['password'] == '123456':
-        session['logged_in'] = True
-        token_payload = {
-            'user': request.form['username'],
-            'expiration': str(datetime.utcnow() + timedelta(seconds=60))
-        }
-        token = jwt.encode(token_payload, app.config['SECRET_KEY'], algorithm="HS256")
-        encoded_token = urllib.parse.quote(token)
-        return f'<a href="http://localhost:5000/auth?token={encoded_token}">auth</a> <br> <p>{encoded_token}</p>'
-    else:
-        return make_response('Unable to verify', 403, {'www-Authenticate': 'Basic realm:"Authentication Failed!"'})
+        user = User.query.filter_by(username=username).first()
+        if user and user.password == password:
+            access_token = create_access_token(identity=user.id, expires_delta=timedelta(seconds=30))
+            return {'access token': access_token}, 200
+        return {'message': 'Incorrect credentials'}, 400
+    
+class ProtectedResource(Resource):
+    @jwt_required()
+    def get(self):
+        current_user = get_jwt_identity()
+        return {'message': f'This is a protected resource for user {current_user}'}, 200
+
+    
+api.add_resource(UserRegister, '/register')
+api.add_resource(UserLogin, '/login')
+api.add_resource(ProtectedResource, '/secure', endpoint='secure')
+
 
 if __name__ == '__main__':
     app.run(debug=True)
