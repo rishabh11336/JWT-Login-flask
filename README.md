@@ -8,7 +8,6 @@ This repository contains a Flask web application with [JWT login system].
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
 - [Usage](#usage)
-- [Contributing](#contributing)
 - [License](#license)
 
 ## Getting Started
