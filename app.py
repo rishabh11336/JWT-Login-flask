@@ -53,6 +53,9 @@ class ProtectedResource(Resource):
         current_user = get_jwt_identity()
         return {'message': f'This is a protected resource for user {current_user}'}, 200
 
+@app.route('/')
+def index():
+    return 'Hello world'
     
 api.add_resource(UserRegister, '/register')
 api.add_resource(UserLogin, '/login')
